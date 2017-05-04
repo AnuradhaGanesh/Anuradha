@@ -1,0 +1,56 @@
+%T = [138.236282276995 178.833895735524;
+     %126.972672630696 173.930225514863;
+     %120.808368334551 165.562933710738;
+     %97.9899333455077 156.756985025566;
+     %85.8029883910756 145.014103029204;
+     %65.2316806242863 142.110296916635];
+%C = [1;2;3;4;5;6];
+load('matlab.mat')
+%test = [52.34757147	135.1580427];
+test=data;
+%load('training.mat')
+
+% Put the test features into variable 'test'
+%te = test_data;
+result = multisvm1(train,class,test);
+disp('LEAF BELONGS TO LCC CLASS:');
+disp(result);
+% Visualize Results
+if result <4 
+    helpdlg(' LOW NITROGEN ');
+    disp('TAKE SUFFICIENT CARE');
+    disp(' IF DRY SEASON:APPLY 35KGN/ha UREA');
+    disp('IF WET SEASON:APPLY 30KGN/ha UREA');
+else
+    helpdlg(' NITROGEN SUFFICIENT');
+    disp('LEAF STATUS:"HEALTHY LEAF"');
+end
+function [result] = multisvm1(T,C,test)
+%Models a given training set with a corresponding group vector and 
+%classifies a given test set using an SVM classifier according to a 
+%one vs. all relation. 
+
+u=unique(C);
+numClasses=length(u);
+result = zeros(length(test(:,1)),1);
+
+%build models
+for k=1:numClasses
+    %Vectorized statement that binarizes Group
+    G1vAll=(C==u(k));
+    models(k) = svmtrain(T,G1vAll);
+   % figure;
+   
+end
+
+%classify test cases
+for j=1:size(test,1)
+    for k=1:numClasses
+        %svmStruct = svmtrain(T,numClasses,'kernel_function','rbf');
+        if(svmclassify(models(k),test(j,:)))
+            break;
+        end
+    end
+    result(j) = k;
+
+end
